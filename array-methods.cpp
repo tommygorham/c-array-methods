@@ -1,68 +1,71 @@
 #include <iostream> 
-using namespace std; 
+using std::cout; 
+#include <algorithm>
+using std::copy; 
+#include <iomanip> 
+using std::setw; 
+
 // method to print array 
-void printArr(int values[], int size){
+void printArr(const int* values, const std::size_t size){
 	// traverse 
-	for (int i = 0; i<size; i++){
-        cout << values[i] << " ";
+	for (int i = 0; i<(int)size; i++){
+        cout << setw(4) <<  values[i];
         }
-};
+		cout << "\n" ; 
+}
 
-// newline  
-void nl(){
-	cout << "\n"; 
-};
-
-// method a: switch first and last element
-void a(){
-	// O(n) time complexity.. will start all methods this way 
-	int arr[] = {1,4,9,16,25};
+// Swap first and last element in c-style array 
+void swapFirstLast(const int* values, const std::size_t size){
+	int arr[size] {};  // array to print, copy in original values   
+	//   src, elements, dest
+	copy(values, values+size, arr); // values +size means &values[size] 
 	// setting temp var to last element in array
-	int temp = arr[4]; 
+	int temp = arr[size-1]; 
 	// setting last element to first element 
-	arr[4] = arr[0]; 
+	arr[size-1] = arr[0]; 
 	arr[0] = temp; // first to temp 
-        printArr(arr, 5);
+    printArr(arr, size);
 }; 	
-// method b: shift elements to the right, last element becomes first
-void b(){ 
-	int arr[] = {1,4,9,16,25}; 
+
+// Shift elements to the right, last element becomes first
+void shiftRight(const int* values, const std::size_t size){ 
+    int arr[size] {}; 
+	copy(values, values+size, arr); 
 	// making temp last element 
-	int temp = arr[4]; 
+	int temp = arr[size-1]; 
 	// reverse iteration
-	for (int i = 4; i >= 0; i--){
-	       if (i == 0){
+	for (int i = (int)size-1; i >= 0; --i){
+	    if (i == 0){
 			arr[0] = temp;
-	       }
-	       // else shift
-	       else 
-	       {
+	    }  
+		else {
 		arr[i] = arr[i-1]; 
-	       }
+	   }
 	}
-	printArr(arr, 5); 	
+	printArr(arr, size); 	
 }; 
-// method c: replace even elements wiht zero
-void c(){ 
-	int arr[] = {1,4,9,16,25}; 
-	// loop thru and replace
-	for (int i = 0; i<4; i++){
-	// you will use loops a lot
-	// look up "mod" 
+
+// Replace even elements with zero
+void replaceEvens(const int* values, const std::size_t size){ 
+	int arr[size] {};  
+    copy(values, values+size, arr); 
+	for (int i = 0; i<(int)size-1; i++){
 		if (arr[i] % 2 == 0){
-		arr[i] = 0; 
-         	}
+		   arr[i] = 0; 
         }
-	printArr(arr, 5); 
+    }
+	printArr(arr, size); 
 }; 
-// method d: larger of adjacents 
-void d(){
-	int arr[] = {1,4,9,16,25}; 
+
+// Replace with larger of adjacent neighbors 
+void replaceWithLargestNeighbor(const int* values, const std::size_t size){
+	int arr[size] {}; 
+    copy(values, values+size, arr); 
 	int temp = arr[1]; // middle element
 	int posLeft = arr[0]; // left of middle
 	int posRight = arr[2]; // right of element 
 	// traverse array, starting with second element, 4 is length 
-	for (int i = 1; i<=4; i++){
+	for (int i = 1; i<=(int)size-1; i++){
 		if (posLeft < posRight){
 			arr[i] = posRight; 
 		}
@@ -71,7 +74,7 @@ void d(){
 		}
 		// update pos left
 		posLeft = temp; 
-		if (i+2 <= 4){
+		if (i+2 <= (int)size-1){
 			posRight=arr[i+2]; // if we can still move right without over stepping
 		}
 		// update temp 
@@ -81,11 +84,12 @@ void d(){
 };
 
 // method e: remove middle element
-void e(){
+void removeMiddleElement(const int* values, const std::size_t size){
 	// since array length is odd  
-	int arr[] = {1,4,9,16,25}; 
-	int arr2[3];// new array to copy elements
-        for (int i = 0; i <=4; i++){
+	int arr[size] {}; 
+    copy(values, values+size, arr); 
+	int arr2[size] {};// new array to copy elements
+        for (int i = 0; i <= (int)size-1; i++){
 		if (i >= 2){
 			arr2[i] = arr[i+1]; 
 		}
@@ -93,17 +97,17 @@ void e(){
 			arr2[i] = arr[i]; // copy elements
 		}
 	}	
-	printArr(arr2,4); // passing size 4 instead of 5 since i removed one
+	printArr(arr2,size-1); // passing size 4 instead of 5 since i removed one
 };
 
-// method f: move even elements to front
-void f(){
-	int arr[] = {1,4,9,16,25}; 
-	// move even to front = move odd to back (also) 
-	int pos = 4; // pos = last element
+// Move even elements to front
+ void shiftEvenFront(const int* values, const std::size_t size){
+	int arr[size] {};
+    copy(values, values+size, arr); 
+	int pos = size-1; // pos = last element
 	int temp; // always good to have 
 	// traverse backwards again 
-	for (int i = 4; i >= 0; i--){
+	for (int i = size-1; i >= 0; i--){
 		if (arr[i] % 2 != 0){
 			temp = arr[pos]; 
 			arr[pos] = arr[i]; 
@@ -111,15 +115,16 @@ void f(){
 			--pos;
 		 }	
 	}
-	printArr(arr, 5); 
+	printArr(arr, size); 
 };
 
-// method g: second largest value in array
-int g(){
-	int arr[] = {1,4,9,16,25};
-        int largest = arr[0]; 
+// Return Ssecond largest value in array
+int retSecondLargest(const int* values, const std::size_t size){
+	int arr[size] {}; 
+	copy(values, values+size, arr); 
+	int largest = arr[0]; 
 	int second_largest = arr[0]; // start both at first element for testing 
-	for (int i = 0; i < 5; i++){
+	for (int i = 0; i < (int)size; i++){
 		if (arr[i] > largest){
 			second_largest=largest; 
 			largest = arr[i];
@@ -132,21 +137,23 @@ int g(){
 };
 
 // method h: return true if array in increasing order
-bool h(){
-	int arr[] = {1,4,9,16,25}; 
-	for (int i = 0; i < 5; i++){
+bool isIncreasing(const int* values, const std::size_t size){
+	int arr[size] {}; 
+	copy(values, values+size, arr); 
+	for (int i = 0; i < (int)size; i++){
 		if (arr[i] < arr[i+1]){
 			return true; 
 		} 
-	}return false; 
-	 
+	} 
+    return false; 
 }; 
 
-// method i: return true if two adjacent duplicate elements 
-bool i(){
+// Return true if two adjacent duplicate elements 
+bool adjDuplicates(const int* values, const std::size_t size){
        //bool adjacent = false; 	
-	int arr[] = {1,4,9,16,25}; 
-	for (int i = 0; i < 5; i++){
+	int arr[size] {}; 
+	copy(values, values+size, arr); 
+	for (int i = 0; i < (int)size; i++){
 		if (arr[i] == arr[i+1]){ // if adjacent duplicates
 			return true; 
 		}
@@ -154,62 +161,72 @@ bool i(){
 	return false;  
 }; 	
 
-// method j: return true if duplicate elements at all
-bool j(){
-	int arr[] = {1,4,9,16,25};
+// Return true if duplicate elements exist
+bool anyDuplicates(const int* values, const std::size_t size){
+	int arr[size] {}; 
+	copy(values, values+size, arr); 
         // regular traverse	
-	for (int i = 0; i <5; i++){
+	for (int i = 0; i < (int)size; i++){
 		// nested traverse to comapre i to all elements in array.. not just adj
-		for (int j = 0; j < 5; j++){
+		for (int j = 0; j < (int)size; j++){
 			// test for duplicates
-			if (i != j &&  arr[i] == arr[j])
-			{
+			if (i != j &&  arr[i] == arr[j]){
 				return true;
 			}
 		}
 	} 
 	return false; 
 };
+ 
 
 int main(){
-	int arr[] = {1,4,9,16,25};
-        int size = 5; 	
-	cout << "Original Test Array: "; 
-	printArr(arr, size);
-	nl(); //newline
-	cout << "a) swap first and last elements: "; 
-	a();  
-	nl(); 
-	cout << "b) shift elements one to the right, last becomes first: "; 
-	b(); 
-	nl(); 
-	cout << "c) replace even elements with zero: "; 
-	c(); 
-	nl(); 
-	cout << "d) replace each element with the largest of its neighbors (excluding first and last): "; 
-	d();
-       	nl(); 
-	cout << "e) remove middle element: "; 
-	e(); 	
-	nl(); 
-	cout << "f) move even elements to the front: "; 
-	f();
-	nl(); 
-	cout << "g) second largest element in array: "; 
-	int second_L = g(); 
-	cout << second_L; 
-	nl(); 
-	cout << "h) array sorted in increasing order? (1=true, 0=false): "; 
-	bool increasing = h();
-        cout << increasing;	
-	nl(); 
-	cout << "i) array contains two adjacent duplicates? (1=true, 0=false): "; 
-	bool ans = i(); 
-	cout << ans; 
-	bool duplicate = j();
-        nl(); 	
-	cout << "j) array contains duplicate elements? (1=true, 0=false): "; 
-	cout << duplicate << endl; 
-		
+	const int values[] = {1,4,9,16,25};	
+	const std::size_t size = sizeof(values)/sizeof(values[0]); 
+	
+	cout << "\nOriginal Test Array:      ";  
+	printArr(values, size); 
+	cout << "Swap first/last element:  "; 
+	swapFirstLast(values, size);  
+    
+	cout << "\nOriginal Test Array:      ";  
+	printArr(values, size); 
+	cout << "Shift each element right: "; 
+    shiftRight(values, size);  
+    
+	cout << "\nOriginal Test Array:      ";  
+	printArr(values, size); 
+	cout << "Replace evens with zero:  "; 
+	replaceEvens(values, size); 
+    
+	cout << "\nOriginal Test Array:      ";  
+	printArr(values, size); 
+	cout << "Replace w/largest adj:    "; 
+	replaceWithLargestNeighbor(values, size); // excluding first and last, aka no wrapping  
+    
+	cout << "\nOriginal Test Array:      ";  
+	printArr(values, size); 
+	cout << "Remove middle element:    "; 
+	removeMiddleElement(values, size); 	
+	
+	cout << "\nOriginal Test Array:      ";  
+	printArr(values, size); 	
+	cout << "Move even vals to front:  "; 
+	shiftEvenFront(values, size);
+	 
+	int element = retSecondLargest(values, size);  
+    cout << "\nThe second largest element is:              " << element << std::endl;  
+    
+	cout << "Sorted in increasing order?                 "; 
+	bool check = isIncreasing(values, size);
+    cout << std::boolalpha <<  check << std::endl; 	
+	
+	cout << "i) Array contains adjacent duplicates?      "; 
+	bool check2 = adjDuplicates(values, size); 
+	cout << std::boolalpha << check2 << std::endl;  
+	   	
+	cout << "Array contains duplicate elements?          "; 
+	bool check3 = anyDuplicates(values, size); 
+	cout << std::boolalpha << check3 << std::endl; 
+	
 	return 0;
 }	
